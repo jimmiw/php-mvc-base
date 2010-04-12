@@ -1,0 +1,8 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine on
+  
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^ app/router.php [L,QSA]
+  
+  ErrorDocument 404 /app/views/errors/404.php
+</IfModule>

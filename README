@@ -1,3 +1,7 @@
 A structure I use to get started with PHP projects.
 
 It enables the developer to hook up plugins and let's you use pretty URLs
+
+* To test this project, just download the zip (or tar.gz, or fork it etc).
+* Place it in your web servers root (remember to include the .htaccess file!).
+* start your web server and head to: http://localhost/test
