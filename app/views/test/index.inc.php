@@ -1,8 +1,8 @@
 <?php
 
-echo "this is the view!";
+echo "<p>this is the view!</p>";
 
 // using the data from the controller (if any!)
-echo $some_data;
+echo "<p>".$some_data."</p>";
 
 ?>
