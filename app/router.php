@@ -21,15 +21,21 @@ function __autoload($class_name) {
   require_once '../lib/'.$class_name.'.inc.php';
 }
 
-// finds the parameters
-$parameters = explode("/", substr($_SERVER['REQUEST_URI'],1));
+// removes the GET parameters from the URL
+$path = explode("?",$_SERVER['REQUEST_URI']);
+// since we only need the "path", we take the data at the first index
+$path = $path[0];
+// removes the first / (if any)
+$path = substr($path, 1);
+// splits the parameters at the / sign
+$path = explode("/", $path);
 
 $routeFound = false;
 $action = "";
 $params = array();
 
 // runs through the controllers, finding a match
-for($i = sizeOf($parameters)-1; $routeFound == false && $i >= 0; $i--) {
+for($i = sizeOf($path); $routeFound == false && $i >= 0; $i--) {
   // initializes the action
   $action = "controllers";
   // initializes the parameters array
@@ -37,13 +43,15 @@ for($i = sizeOf($parameters)-1; $routeFound == false && $i >= 0; $i--) {
   
   // creates the file
   foreach(range(0, $i) as $index) {
-    $action .= "/";
-    $action .= $parameters[$index];
+    if($path[$index] != "") {
+      $action .= "/";
+      $action .= $path[$index];
+    }
   }
   // creates the array of parameters
-  foreach(range($i+1, sizeOf($parameters)) as $index) {
-    if($parameters[$index] != "") {
-      $params[] = $parameters[$index];
+  foreach(range($i+1, sizeOf($path)) as $index) {
+    if($path[$index] != "") {
+      $params[] = $path[$index];
     }
   }
   
