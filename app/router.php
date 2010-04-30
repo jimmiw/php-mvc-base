@@ -22,51 +22,77 @@ function __autoload($class_name) {
 }
 
 // removes the GET parameters from the URL
-$path = explode("?",$_SERVER['REQUEST_URI']);
+$url = explode("?",$_SERVER['REQUEST_URI']);
 // since we only need the "path", we take the data at the first index
-$path = $path[0];
-// removes the first / (if any)
-$path = substr($path, 1);
-// splits the parameters at the / sign
-$path = explode("/", $path);
-
-$routeFound = false;
-$action = "";
-$params = array();
-
-// runs through the controllers, finding a match
-for($i = sizeOf($path); $routeFound == false && $i >= 0; $i--) {
-  // initializes the action
-  $action = "controllers";
-  // initializes the parameters array
-  $params = array();
-  
-  // creates the file
-  foreach(range(0, $i) as $index) {
-    if($path[$index] != "") {
-      $action .= "/";
-      $action .= $path[$index];
-    }
-  }
-  // creates the array of parameters
-  foreach(range($i+1, sizeOf($path)) as $index) {
-    if($path[$index] != "") {
-      $params[] = $path[$index];
-    }
-  }
-  
-  if(is_file($action.".php")) {
-    $routeFound = true;
-    $action .= ".php";
-  }
-  else if(is_file($action."/index.php")) {
-    $routeFound = true;
-    $action .= "/index.php";
+$url = $url[0];
+// splits the parameters at the / sign and removes any empty spaces in the path.
+$urlArray = explode("/", $url);
+// constructs an array to hold the path
+$path = array();
+// runs through the url pieces, removes the spaces
+for($i = 0; $i < sizeOf($urlArray); $i++) {
+  $urlPiece = $urlArray[$i];
+  if($urlPiece != "") {
+    $path[] = $urlPiece;
   }
 }
 
+/**
+ * tries to find an action to call using the path called (url).
+ * @param $path, the url/path to find a controller from.
+ * @param $params, an array passed as reference, so additional parameters can be used later
+ */
+function findController($path, $params) {
+  $action = '';
+  $routeFound = false;
+  
+  // runs through the controllers, finding a match
+  for($i = sizeOf($path); $routeFound == false && $i >= 0; $i--) {
+    // initializes the action
+    $action = "controllers";
+    // initializes the parameters array
+    $params = array();
+
+    // creates the file
+    foreach(range(0, $i) as $index) {
+      if($path[$index] != "") {
+        $action .= "/";
+        $action .= $path[$index];
+      }
+    }
+    // creates the array of parameters
+    foreach(range($i+1, sizeOf($path)) as $index) {
+      if($path[$index] != "") {
+        $params[] = $path[$index];
+      }
+    }
+
+    if(is_file($action.".php")) {
+      $routeFound = true;
+      $action .= ".php";
+    }
+    else if(is_file($action."/index.php")) {
+      $routeFound = true;
+      $action .= "/index.php";
+    }
+  }
+  
+  // if we couldn't find a valid route, remove the "current action"
+  if(!$routeFound) {
+    // resets the action and the params array
+    $action = "";
+    $params = array();
+  }
+  
+  return $action;
+}
+
+$params = array();
+// tries to find a controller
+$action = findController($path, &$params);
+
 // if a route was found, include it!
-if($routeFound) {
+if($action != "") {
   include($action);
 }
 // uncomment this to have "empty" urls point to a certain location
