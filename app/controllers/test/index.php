@@ -10,7 +10,7 @@
 $some_data = "data from the controller";
 
 // To execute the view, use the following include:
-include('views/test/index.inc.php');
+include('views/test/index.view.php');
 
 // using .inc. in the view name is just a personal preference.
 
