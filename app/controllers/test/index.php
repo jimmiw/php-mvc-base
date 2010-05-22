@@ -7,6 +7,8 @@
 // example, setting a variable that is to be used in the view. This could
 // have been data fetched from a database select as well.
 
+// in this example we are just setting some text data in a variable called 
+// $some_data. This can then be used in the view.
 $some_data = "data from the controller";
 
 // To execute the view, use the following include:

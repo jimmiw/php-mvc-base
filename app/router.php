@@ -8,6 +8,9 @@ ob_start();
 // starts the session
 session_start();
 
+// starts loading the environment
+include('../loader.php');
+
 // loads my configurations into the system
 require_once('../config/environment.inc.php');
 // connects to the database
