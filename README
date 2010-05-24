@@ -1,7 +1,31 @@
+h1. About
+
 A structure I use to get started with PHP projects.
 
 It enables the developer to hook up plugins and let's you use pretty URLs
 
+h2. Test it!
+
 * To test this project, just download the zip (or tar.gz, or fork it etc).
 * Place it in your web servers root (remember to include the .htaccess file!).
 * start your web server and head to: http://localhost/test
+
+
+h1. Usage
+
+I've added some README files in the various folders.
+
+The app/router.php is the heart of the system.
+All requests go through this file and it decides how the routing of the app 
+should be.
+You can add additional hooks in this file to add certain routes etc (a better
+system for this will arrive one day).
+
+h2. Structure
+
+The root of the project holds a few directories:
+/app - This is the folder where your magic will happen. Use the views, controllers and models folder for your app code.
+/config - this folder holds a few configuration files. Currently only the connection to the database.
+/lib - This is where you should put external libraries and other external files.
+/public - This folder holds files that are to be "downloaded" from your app. Stylesheets, javascripts and images used. (and more of course)
+/* - files used by the application it self. These should not be changed.
