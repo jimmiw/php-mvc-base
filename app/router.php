@@ -21,18 +21,20 @@ include('../lib/db.inc.php');
  * @param $name       the name of the objec t to load
  */
 function __autoload($class_name) {
-  require_once '../lib/'.$class_name.'.inc.php';
+  require_once 'models/'.$class_name.'.class.php';
 }
 
 // removes the GET parameters from the URL
-$url = explode("?",$_SERVER['REQUEST_URI']);
+$url = explode("?",substr($_SERVER['REQUEST_URI'], strlen(APPROOT)));
 // since we only need the "path", we take the data at the first index
 $url = $url[0];
 // splits the parameters at the / sign and removes any empty spaces in the path.
 $urlArray = explode("/", $url);
+
 // constructs an array to hold the path
 $path = array();
-// runs through the url pieces, removes the spaces
+// runs through the url pieces, removes the spaces, constructing the path
+// starts from the subFolderCount until the end of the url array
 for($i = 0; $i < sizeOf($urlArray); $i++) {
   $urlPiece = $urlArray[$i];
   if($urlPiece != "") {
@@ -69,6 +71,8 @@ function findController($path, $params) {
         $params[] = $path[$index];
       }
     }
+    
+    //echo "testing path: ".$action."<br/>";
 
     if(is_file($action.".php")) {
       $routeFound = true;
