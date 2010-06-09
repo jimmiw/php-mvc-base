@@ -54,8 +54,74 @@ function app_path($type = '') {
   else if($type == 'javascript') {
     $path .= 'public/javascripts/';
   }
+  else if($type == 'image') {
+    $path .= 'public/images/';
+  }
   
   return $path;
+}
+
+/**
+ * Creates a html image element, using the given image src and the options array.
+ * @param $image, the image src.
+ * @param $options, an array with additional options to set.
+ * @return returns the html image element, with a src set to the given image.
+ */
+function image_link($image, $options = null) {
+  $htmlImage = '<img src="';
+  $htmlImage .= app_path('image').$image;
+  $htmlImage .= '"';
+  $htmlImage .= ' alt="';
+  $htmlImage .= (isset($options) && isset($options['alt'])? $options['alt'] : $image);
+  $htmlImage .= '" />';
+  return $htmlImage;
+}
+
+/**
+ * A simple function for fetching the data in the given mysql result set, and
+ * returning this data prefixed with the table name.field name.
+ *
+ * If you have a table created like this:
+ * create table users(
+ *   id int primary key auto_increment,
+ *   name varchar(255)
+ * );
+ *
+ * Then the data returned from a "select * from users" will look like this:
+ * array(array('users.id' => 1, 'users.name' => 'jimmiw' ),...)
+ *
+ * @param $result, the result set from your mysql_query.
+ * @return the data from the result, nicely prefixed with the table name
+ */
+function mysql_fetch_data_with_prefixed_names($result) {
+  // placeholder for the data
+  $data = array();
+  // placeholder for the meta data
+  $metaData = null;
+  
+  // runs through the rows in the result set
+  while($row = mysql_fetch_row($result)) {
+    // if the metadata is not initialized, initialize it.
+    if(!isset($metaData)) {
+      $metaData = array();
+      // runs through each tuple, getting the table name and field name
+      for($i = 0; $i < sizeOf($row); $i++) {
+        $meta = mysql_fetch_field($result, $i);
+        $metaData[$i] = $meta->table.".".$meta->name;
+      }
+    }
+    
+    // constructs a placeholder to hold the data from the table
+    $dataRow = array();
+    // runs through the data, adding the "row name" and the actual data from the row
+    for($i =  0; $i < sizeOf($row); $i++) {
+      $dataRow[$metaData[$i]] = $row[$i];
+    }
+    // adds the row data to the data array
+    $data[] = $dataRow;
+  }
+  
+  return $data;
 }
 
 ?>
