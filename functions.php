@@ -73,6 +73,16 @@ function image_link($image, $options = null) {
   $htmlImage .= '"';
   $htmlImage .= ' alt="';
   $htmlImage .= (isset($options) && isset($options['alt'])? $options['alt'] : $image);
+  $htmlImage .= '"';
+  if($options['class'] != "") {
+    $htmlImage .= ' class="'.$options['class'].'"';
+  }
+  if($options['id'] != "") {
+    $htmlImage .= ' id="'.$options['id'].'"';
+  }
+  if($options['style'] != "") {
+    $htmlImage .= ' style="'.$options['style'].'"';
+  }
   $htmlImage .= '" />';
   return $htmlImage;
 }
