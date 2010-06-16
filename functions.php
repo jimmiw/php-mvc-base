@@ -103,7 +103,7 @@ function image_link($image, $options = null) {
  * @param $result, the result set from your mysql_query.
  * @return the data from the result, nicely prefixed with the table name
  */
-function mysql_fetch_data_with_prefixed_names($result) {
+function mysql_fetch_prefixed_data($result) {
   // placeholder for the data
   $data = array();
   // placeholder for the meta data
