@@ -1,7 +1,11 @@
 <?php
 
 // creates the connection to the database server
-$connection_link = mysql_connect($conf['db_host'], $conf['db_user'], $conf['db_password']);
+$connection_link = mysql_connect(
+  getConfiguration('db_host'),
+  getConfiguration('db_user'),
+  getConfiguration('db_password')
+);
 
 // tests if there is a connection
 if(!$connection_link) {
@@ -9,19 +13,10 @@ if(!$connection_link) {
 }
 else {
   // connects to the correct database
-  mysql_select_db($conf['db_name'], $connection_link);
+  mysql_select_db(
+    getConfiguration('db_name'),
+    $connection_link
+  );
 }
-
-/*
-// initializes the database connection
-$dbh = false;
-
-try {
-  $dbh = new PDO('mysql:host='.$conf['db_host'].';dbname='.$conf['db_name'], $conf['db_user'], $conf['db_password']);
-}
-catch (PDOException $e) {
-  print "Error!: " . $e->getMessage() . "<br/>";
-  die();
-}*/
 
 ?>
