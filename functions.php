@@ -134,4 +134,26 @@ function mysql_fetch_prefixed_data($result) {
   return $data;
 }
 
+/**
+ * Function for storing data to the configuration data
+ * @param string $key the key to store the given value under
+ * @param mixed $value the value to store
+ */
+function storeConfiguration($key, $value) {
+  if(!isset($_SESSION['conf'])) {
+    $_SESSION['conf'] = array();
+  }
+  
+  $_SESSION['conf'][$key] = $value;
+}
+
+/**
+ * Fetches the configuration for the given key
+ * @param string $key the key to fetch data for.
+ * @return mixed the data for the given key
+ */
+function getConfiguration($key) {
+  return $_SESSION['conf'][$key];
+}
+
 ?>
