@@ -8,110 +8,182 @@ ob_start();
 // starts the session
 session_start();
 
-// starts loading the environment
-include('../loader.php');
-
-// loads my configurations into the system
-require_once('../config/environment.inc.php');
-// connects to the database
-include('../lib/db.inc.php');
-
-/** 
- * includes different class objects without me lifting a finger
- * @param $name       the name of the objec t to load
+/**
+ * Finds the controller to call
  */
-function __autoload($class_name) {
-  require_once 'models/'.$class_name.'.class.php';
+function findController($path, $params) {
+  $requestURI = removeParameters($path);
+  
+  $dataFound = findPath($requestURI);
+  
+  if(getConfiguration('route.storage')) {
+    if($dataFound != null) {
+      $params = $dataFound['params'];
+      return $dataFound['path'];
+    }
+  }
+  
+  if(is_file("controllers".$requestURI.".php")) {
+    if(getConfiguration('route.storage')) {
+      storePath("controllers".$requestURI.".php", $params);
+    }
+    return "controllers".$requestURI.".php";
+  }
+  else if(is_file("controllers".$requestURI."/index.php")) {
+    if(getConfiguration('route.storage')) {
+      storePath("controllers".$requestURI."/index.php", $params);
+    }
+    return "controllers".$requestURI."/index.php";
+  }
+  else {
+    // finds the last position of a front slash
+    $slashPosition = strrpos($requestURI,'/');
+    // finds the "directory" to remove
+    $removeableParam = substr($requestURI,$slashPosition+1);
+  
+    // if there is some data in the string, save it to the parameter array
+    if($removeableParam != "") {
+      $params[] = $removeableParam;
+    }
+  
+    // removes the previous "directory"
+    $requestURI = substr($requestURI,0, $slashPosition);
+    // if there still is data left, do a recursive call to this function
+    if($requestURI != "") {
+      return findController($requestURI, &$params);
+    }
+  }
+  
+  // returns an empty string, if a controller was not found
+  return "";
 }
 
-// removes the GET parameters from the URL
-$url = explode("?",substr($_SERVER['REQUEST_URI'], strlen(APPROOT)));
-// since we only need the "path", we take the data at the first index
-$url = $url[0];
-// splits the parameters at the / sign and removes any empty spaces in the path.
-$urlArray = explode("/", $url);
+/**
+ * Removes all parameters from the given path (all chars including and after
+ * the ? char ).
+ * @param string $path the path to remove the parameters from
+ * @return string the path without the parameters
+ */
+function removeParameters($path) {
+  $path = explode("?", $path);
+  $path = $path[0];
+  if(strrpos($path,'/') == strlen($path)-1) {
+    $path = substr($path,0,strlen($path)-1);
+  }
+  return $path; 
+}
 
-// constructs an array to hold the path
-$path = array();
-// runs through the url pieces, removes the spaces, constructing the path
-// starts from the subFolderCount until the end of the url array
-for($i = 0; $i < sizeOf($urlArray); $i++) {
-  $urlPiece = $urlArray[$i];
-  if($urlPiece != "") {
-    $path[] = $urlPiece;
+/** 
+ * Stores the given path (in the session), using the current REQUEST_URI as key
+ * @param string $path the path to save (a controller found)
+ * @param array $params the parameters found
+ */
+function storePath($path, $params) {
+  $key = '_routes_';
+  
+  $requestURI = removeParameters($_SERVER['REQUEST_URI']);
+  
+  if(!isset($_SESSION[$key])) {
+    $_SESSION[$key] = array();
+  }
+  
+  // saves the current request, as the given path
+  $_SESSION[$key][$requestURI] = array(
+    'path' => $path,
+    'params' => $params
+  );
+}
+
+/** 
+ * Tests if the given path was already found
+ * @param string $path the path to test.
+ * @return array the data found on the given PATH, else null
+ */
+function findPath($path) {
+  // tests if the path is availiable
+  if(isset($_SESSION['_routes_']) && isset($_SESSION['_routes_'][$path])) {
+    return $_SESSION['_routes_'][$path];
+  }
+  // no path was found, return null!
+  else {
+    return null;
   }
 }
 
 /**
- * tries to find an action to call using the path called (url).
- * @param $path, the url/path to find a controller from.
- * @param $params, an array passed as reference, so additional parameters can be used later
+ * Removes session variables that the router needs to use
  */
-function findController($path, $params) {
-  $action = '';
-  $routeFound = false;
-  
-  // runs through the controllers, finding a match
-  for($i = sizeOf($path); $routeFound == false && $i >= 0; $i--) {
-    // initializes the action
-    $action = "controllers";
-    // initializes the parameters array
-    $params = array();
+function cleanUpSession() {
+  unset($_SESSION['hooksEnd']);
+  unset($_SESSION['conf']);
+}
 
-    // creates the file
-    foreach(range(0, $i) as $index) {
-      if($path[$index] != "") {
-        $action .= "/";
-        $action .= $path[$index];
-      }
-    }
-    // creates the array of parameters
-    foreach(range($i+1, sizeOf($path)) as $index) {
-      if($path[$index] != "") {
-        $params[] = $path[$index];
+/**
+ * Runs through the _end_ hooks and executes them!
+ *
+ * A hook is just a function name etc, that will be eval'd.
+ *
+ * Use this to run functions that does clean ups or to execute different scripts
+ * at the end of the router life cycle
+ */
+function hooksEnd() {
+  foreach($_SESSION['hooksEnd'] as $hook) {
+    eval($hook);
+  }
+}
+
+/**
+ * Loads the libraries in the lib folder.
+ */
+function loadLibraries() {
+  $hooks = array();
+  
+  // opens the lib folder
+  if($librariesFolder = opendir('../lib')) {
+    // runs through the files, loading them one by one
+    while(false !== ($file = readdir($librariesFolder))) {
+      if($file != "." && $file != "..") {
+        if(is_file('../lib/'.$file)) {
+          include_once("../lib/".$file);
+        }
       }
     }
     
-    //echo "testing path: ".$action."<br/>";
-
-    if(is_file($action.".php")) {
-      $routeFound = true;
-      $action .= ".php";
-    }
-    else if(is_file($action."/index.php")) {
-      $routeFound = true;
-      $action .= "/index.php";
-    }
+    // closes the folder handler
+    closedir($librariesFolder);
   }
   
-  // if we couldn't find a valid route, remove the "current action"
-  if(!$routeFound) {
-    // resets the action and the params array
-    $action = "";
-    $params = array();
-  }
-  
-  return $action;
+  // saves the hooks found
+  $_SESSION['hooksEnd'] = $hooks;
 }
+
+// includes the loader file, which loads in the environment
+include('../loader.php');
+// includes the libraries to use
+loadLibraries();
+
 
 $params = array();
-// tries to find a controller
-$action = findController($path, &$params);
+// tries to find a controller to use
+$controller = findController($_SERVER['REQUEST_URI'], &$params);
 
-// if a route was found, include it!
-if($action != "") {
-  include($action);
+// if a controller was found, use it
+if($controller != "") {
+  include($controller);
 }
-// uncomment this to have "empty" urls point to a certain location
-/*else if($_SERVER['REQUEST_URI'] == "" || $_SERVER['REQUEST_URI'] == "/") {
-  header("Location: /blog");
-}*/
+// show an error page if no controller was found
 else {
   // sets the 404 header
   header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found");
   header("Status: 404 Not Found");
+  
   include("views/errors/404.php");
 }
+
+// executes the "end hooks"
+hooksEnd();
+// runs a cleanup in the session
+cleanUpSession();
 
 // flushes the buffer data
 ob_end_flush();
