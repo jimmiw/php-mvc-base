@@ -162,7 +162,6 @@ include('../loader.php');
 // includes the libraries to use
 loadLibraries();
 
-
 $params = array();
 // tries to find a controller to use
 $controller = findController($_SERVER['REQUEST_URI'], &$params);
