@@ -16,6 +16,15 @@ define('ABSPATH', dirname(__FILE__).'/');
 define('APPROOT', substr($_SERVER['SCRIPT_NAME'], 0, strpos($_SERVER['SCRIPT_NAME'], '/app/router.php')));
 
 require(ABSPATH.'functions.php');
+require(ABSPATH.'config/environment.inc.php');
+require(ABSPATH.'config/db.inc.php');
 
+/** 
+ * includes different class objects without me lifting a finger
+ * @param $name       the name of the objec t to load
+ */
+function __autoload($class_name) {
+  require_once 'models/'.$class_name.'.class.php';
+}
 
 ?>
