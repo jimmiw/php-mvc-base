@@ -1,24 +1,23 @@
 <?php
 
-$conf = array();
-
 // production environment specific configurations
 if($_SERVER["SERVER_NAME"] == 'westsworld.dk' || $_SERVER["SERVER_NAME"] == 'www.westsworld.dk') {
   // database configurations
-  $conf['db_password'] = '';
-  $conf['db_user'] = 'root';
-  $conf['db_host'] = 'localhost';
-  $conf['db_name'] = 'database';
-  $conf['db_prefix'] = '';
+  storeConfiguration('db_password', '');
+  storeConfiguration('db_user', 'root');
+  storeConfiguration('db_host', 'localhost');
+  storeConfiguration('db_name', 'database');
+  storeConfiguration('db_prefix', '');
+  storeConfiguration('route.storage', true);
 }
 // all other environments:
 // includes test and development and staging
 else {
   // database configurations
-  $conf['db_password'] = '12345';
-  $conf['db_user'] = 'root';
-  $conf['db_host'] = 'localhost';
-  $conf['db_name'] = 'database';
-  $conf['db_prefix'] = '';
+  storeConfiguration('db_password', '12345');
+  storeConfiguration('db_user', 'root');
+  storeConfiguration('db_host', '127.0.0.1');
+  storeConfiguration('db_name', 'familielivet');
+  storeConfiguration('db_prefix', '');
 }
 ?>
