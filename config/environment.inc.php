@@ -6,7 +6,7 @@ if($_SERVER["SERVER_NAME"] == 'westsworld.dk' || $_SERVER["SERVER_NAME"] == 'www
   storeConfiguration('db_password', '');
   storeConfiguration('db_user', 'root');
   storeConfiguration('db_host', 'localhost');
-  storeConfiguration('db_name', 'database');
+  storeConfiguration('db_name', 'production_database');
   storeConfiguration('db_prefix', '');
   storeConfiguration('route.storage', true);
 }
@@ -17,7 +17,7 @@ else {
   storeConfiguration('db_password', '12345');
   storeConfiguration('db_user', 'root');
   storeConfiguration('db_host', '127.0.0.1');
-  storeConfiguration('db_name', 'familielivet');
+  storeConfiguration('db_name', 'test_database');
   storeConfiguration('db_prefix', '');
 }
 ?>
