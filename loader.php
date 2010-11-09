@@ -9,22 +9,24 @@
  * putting projects in sub directories, which made the router fail. Defining and
  * using this path, helps determine the correct routes.
  */
-
 // defindes the absolute path to the files
 define('ABSPATH', dirname(__FILE__).'/');
 // defines the application root
 define('APPROOT', substr($_SERVER['SCRIPT_NAME'], 0, strpos($_SERVER['SCRIPT_NAME'], '/app/router.php')));
+
+// creates the configuration array
+$configuration = array();
 
 require(ABSPATH.'functions.php');
 require(ABSPATH.'config/environment.inc.php');
 require(ABSPATH.'config/db.inc.php');
 
 /** 
- * includes different class objects without me lifting a finger
- * @param $name       the name of the objec t to load
+ * includes different class objects without lifting a finger
+ * @param string $className the name of the object to load
  */
-function __autoload($class_name) {
-  require_once 'models/'.$class_name.'.class.php';
+function __autoload($className) {
+  require_once 'models/'.$className.'.class.php';
 }
 
 ?>
