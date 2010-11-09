@@ -140,11 +140,9 @@ function mysql_fetch_prefixed_data($result) {
  * @param mixed $value the value to store
  */
 function storeConfiguration($key, $value) {
-  if(!isset($_SESSION['conf'])) {
-    $_SESSION['conf'] = array();
-  }
+  global $configuration;
   
-  $_SESSION['conf'][$key] = $value;
+  $configuration[$key] = $value;
 }
 
 /**
@@ -153,7 +151,14 @@ function storeConfiguration($key, $value) {
  * @return mixed the data for the given key
  */
 function getConfiguration($key) {
-  return $_SESSION['conf'][$key];
+  global $configuration;
+  
+  if(isset($configuration[$key])) {
+    return $configuration[$key];
+  }
+  else {
+    return null;
+  }
 }
 
 ?>
