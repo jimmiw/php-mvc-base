@@ -139,12 +139,12 @@ function loadLibraries() {
   $hooks = array();
   
   // opens the lib folder
-  if($librariesFolder = opendir('../lib')) {
+  if($librariesFolder = opendir('../vendor')) {
     // runs through the files, loading them one by one
     while(false !== ($file = readdir($librariesFolder))) {
       if($file != "." && $file != "..") {
-        if(is_file('../lib/'.$file)) {
-          include_once("../lib/".$file);
+        if(is_file('../vendor/'.$file)) {
+          include_once("../vendor/".$file);
         }
       }
     }
@@ -157,6 +157,15 @@ function loadLibraries() {
   $_SESSION['hooksEnd'] = $hooks;
 }
 
+/**
+ * Finds the current URL. It simply takes the request URI and removes the 
+ * APPROOT from it.
+ * For more information about the APPROOT, see /loader.php
+ */
+function currentUrl() {
+  return substr($_SERVER['REQUEST_URI'], strlen(APPROOT));
+}
+
 // includes the loader file, which loads in the environment
 include('../loader.php');
 // includes the libraries to use
@@ -164,7 +173,7 @@ loadLibraries();
 
 $params = array();
 // tries to find a controller to use
-$controller = findController($_SERVER['REQUEST_URI'], &$params);
+$controller = findController(currentUrl(), &$params);
 
 // if a controller was found, use it
 if($controller != "") {
