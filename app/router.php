@@ -14,25 +14,10 @@ session_start();
 function findController($path, $params) {
   $requestURI = removeParameters($path);
   
-  $dataFound = findPath($requestURI);
-  
-  if(getConfiguration('route.storage')) {
-    if($dataFound != null) {
-      $params = $dataFound['params'];
-      return $dataFound['path'];
-    }
-  }
-  
   if(is_file("controllers".$requestURI.".php")) {
-    if(getConfiguration('route.storage')) {
-      storePath("controllers".$requestURI.".php", $params);
-    }
     return "controllers".$requestURI.".php";
   }
   else if(is_file("controllers".$requestURI."/index.php")) {
-    if(getConfiguration('route.storage')) {
-      storePath("controllers".$requestURI."/index.php", $params);
-    }
     return "controllers".$requestURI."/index.php";
   }
   else {
@@ -71,43 +56,6 @@ function removeParameters($path) {
     $path = substr($path,0,strlen($path)-1);
   }
   return $path; 
-}
-
-/** 
- * Stores the given path (in the session), using the current REQUEST_URI as key
- * @param string $path the path to save (a controller found)
- * @param array $params the parameters found
- */
-function storePath($path, $params) {
-  $key = '_routes_';
-  
-  $requestURI = removeParameters($_SERVER['REQUEST_URI']);
-  
-  if(!isset($_SESSION[$key])) {
-    $_SESSION[$key] = array();
-  }
-  
-  // saves the current request, as the given path
-  $_SESSION[$key][$requestURI] = array(
-    'path' => $path,
-    'params' => $params
-  );
-}
-
-/** 
- * Tests if the given path was already found
- * @param string $path the path to test.
- * @return array the data found on the given PATH, else null
- */
-function findPath($path) {
-  // tests if the path is availiable
-  if(isset($_SESSION['_routes_']) && isset($_SESSION['_routes_'][$path])) {
-    return $_SESSION['_routes_'][$path];
-  }
-  // no path was found, return null!
-  else {
-    return null;
-  }
 }
 
 /**
