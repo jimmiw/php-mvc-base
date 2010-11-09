@@ -8,7 +8,6 @@ if($_SERVER["SERVER_NAME"] == 'westsworld.dk' || $_SERVER["SERVER_NAME"] == 'www
   storeConfiguration('db_host', 'localhost');
   storeConfiguration('db_name', 'production_database');
   storeConfiguration('db_prefix', '');
-  storeConfiguration('route.storage', true);
 }
 // all other environments:
 // includes test and development and staging
