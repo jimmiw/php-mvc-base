@@ -1,3 +1,9 @@
+h1. Important note!
+
+Versions 0.3.1 and 0.3.2 are broken.
+
+Please switch to version 0.3.3 if you experience any problems
+
 h1. About
 
 A structure I use to get started with PHP projects.
@@ -29,3 +35,13 @@ The root of the project holds a few directories:
 /lib - This is where you should put external libraries and other external files.
 /public - This folder holds files that are to be "downloaded" from your app. Stylesheets, javascripts and images used. (and more of course)
 /* - files used by the application it self. These should not be changed.
+
+h1. Changelog
+
+I'll start having a changelog at the bottom of this page.
+
+h2. Version 0.3.3
+
+* Added the missing vendor folder.
+* Fixed an error with exposing the application root (.htaccess file fix).
+* Fixed an error where all files in the vendor scripts folder was read into the system. Only .php files are now read.
