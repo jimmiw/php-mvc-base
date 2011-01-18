@@ -1,6 +1,6 @@
 h1. Important note!
 
-Versions 0.3.1 and 0.3.2 are broken.
+Versions 0.3.0, 0.3.1 and 0.3.2 are broken.
 
 Please switch to version 0.3.3 if you experience any problems
 
