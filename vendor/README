@@ -1,3 +1,5 @@
 Place your vendor scripts in this folder.
 
 These will be loaded automatically.
+
+A script is just a PHP file, that can be executed
