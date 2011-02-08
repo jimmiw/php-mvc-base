@@ -91,7 +91,7 @@ function loadLibraries() {
     // runs through the files, loading them one by one
     while(false !== ($file = readdir($librariesFolder))) {
       if($file != "." && $file != "..") {
-        if(is_file('../vendor/'.$file) && preg_match('/$.php/', $file)) {
+        if(is_file('../vendor/'.$file) && preg_match('/.php$/', $file)) {
           include_once("../vendor/".$file);
         }
       }
