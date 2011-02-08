@@ -83,22 +83,24 @@ function hooksEnd() {
 /**
  * Loads the libraries in the lib folder.
  */
-function loadLibraries() {
+function loadVendorLibraries() {
   $hooks = array();
   
+  $vendorFolder = "../vendor";
+  
   // opens the lib folder
-  if($librariesFolder = opendir('../vendor')) {
+  if($dir = opendir($vendorFolder)) {
     // runs through the files, loading them one by one
-    while(false !== ($file = readdir($librariesFolder))) {
+    while(false !== ($file = readdir($dir))) {
       if($file != "." && $file != "..") {
-        if(is_file('../vendor/'.$file) && preg_match('/.php$/', $file)) {
-          include_once("../vendor/".$file);
+        if(is_file($vendorFolder.$file) && preg_match('/.php$/', $file)) {
+          include_once($vendorFolder.$file);
         }
       }
     }
     
     // closes the folder handler
-    closedir($librariesFolder);
+    closedir($dir);
   }
   
   // saves the hooks found
@@ -116,8 +118,8 @@ function currentUrl() {
 
 // includes the loader file, which loads in the environment
 include('../loader.php');
-// includes the libraries to use
-loadLibraries();
+// loads the libraries in the vendor folder
+loadVendorLibraries();
 
 $params = array();
 // tries to find a controller to use
