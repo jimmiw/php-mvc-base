@@ -86,7 +86,7 @@ function hooksEnd() {
 function loadVendorLibraries() {
   $hooks = array();
   
-  $vendorFolder = "../vendor";
+  $vendorFolder = "../vendor/";
   
   // opens the lib folder
   if($dir = opendir($vendorFolder)) {
