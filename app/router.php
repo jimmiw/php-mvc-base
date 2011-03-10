@@ -67,6 +67,21 @@ function cleanUpSession() {
 }
 
 /**
+ * Runs through the _before_ hooks and executes them!
+ *
+ * A hook is just a function name etc, that will be eval'd.
+ *
+ * Use this to run functions that does:
+ * Access restriction or to execute different scripts at the start of the
+ * router life cycle
+ */
+function executeBeforeFilters() {
+  foreach($_SESSION['before_filter'] as $filter) {
+    call_user_func($filter);
+  }
+}
+
+/**
  * Runs through the _end_ hooks and executes them!
  *
  * A hook is just a function name etc, that will be eval'd.
@@ -74,9 +89,26 @@ function cleanUpSession() {
  * Use this to run functions that does clean ups or to execute different scripts
  * at the end of the router life cycle
  */
-function hooksEnd() {
-  foreach($_SESSION['hooksEnd'] as $hook) {
-    eval($hook);
+function executeAfterFilters() {
+  foreach($_SESSION['after_filter'] as $filter) {
+    call_user_func($filter);
+  }
+}
+
+/**
+ * Adds a new filter to the mix
+ *
+ * @param string $filter the name of the function to execute
+ * @param string $when when the filter should be executed. Either before (default) or after
+ */
+function addFilter($filter, $when = 'before') {
+  if(is_string($filter)) {
+    if($when == 'before') {
+      $_SESSION['before_filter'][] = $filter;
+    }
+    else if($when == 'after') {
+      $_SESSION['after_filter'][] = $filter;
+    }
   }
 }
 
@@ -84,7 +116,9 @@ function hooksEnd() {
  * Loads the libraries in the lib folder.
  */
 function loadVendorLibraries() {
-  $hooks = array();
+  // resets the filters
+  $_SESSION['before_filter'] = array();
+  $_SESSION['after_filter'] = array();
   
   $vendorFolder = "../vendor/";
   
@@ -94,6 +128,7 @@ function loadVendorLibraries() {
     while(false !== ($file = readdir($dir))) {
       if($file != "." && $file != "..") {
         if(is_file($vendorFolder.$file) && preg_match('/.php$/', $file)) {
+          // includes the vendor file
           include_once($vendorFolder.$file);
         }
       }
@@ -102,9 +137,6 @@ function loadVendorLibraries() {
     // closes the folder handler
     closedir($dir);
   }
-  
-  // saves the hooks found
-  $_SESSION['hooksEnd'] = $hooks;
 }
 
 /**
@@ -126,6 +158,9 @@ $controller = findController(currentUrl(), &$params);
 // loads the libraries in the vendor folder
 loadVendorLibraries();
 
+// executes the before filters
+executeBeforeFilters();
+
 // if a controller was found, use it
 if($controller != "") {
   include($controller);
@@ -139,8 +174,8 @@ else {
   include("views/errors/404.php");
 }
 
-// executes the "end hooks"
-hooksEnd();
+// executes the after filters
+executeAfterFilters();
 // runs a cleanup in the session
 cleanUpSession();
 
