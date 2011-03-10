@@ -118,12 +118,13 @@ function currentUrl() {
 
 // includes the loader file, which loads in the environment
 include('../loader.php');
-// loads the libraries in the vendor folder
-loadVendorLibraries();
 
 $params = array();
 // tries to find a controller to use
 $controller = findController(currentUrl(), &$params);
+
+// loads the libraries in the vendor folder
+loadVendorLibraries();
 
 // if a controller was found, use it
 if($controller != "") {
