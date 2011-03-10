@@ -1,22 +1,22 @@
 <?php
 
-// creates the connection to the database server
-$connection_link = mysql_connect(
-  getConfiguration('db_host'),
-  getConfiguration('db_user'),
-  getConfiguration('db_password')
-);
+/**
+ * This file is used for creating a connection to the database
+ */
+ 
+// parses the settings file
+$settings = parse_ini_file('settings.ini', true);
 
-// tests if there is a connection
-if(!$connection_link) {
-  die('Could not connect: ' . mysql_error());
-}
-else {
-  // connects to the correct database
-  mysql_select_db(
-    getConfiguration('db_name'),
-    $connection_link
-  );
-}
+// starts the connection to the database
+$dbh = new PDO(
+  sprintf(
+    "%s:host=%s;dbname=%s",
+    $settings['database']['driver'],
+    $settings['database']['host'],
+    $settings['database']['dbname']
+  ),
+  $settings['database']['user'],
+  $settings['database']['password']
+);
 
 ?>
