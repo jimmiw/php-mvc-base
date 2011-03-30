@@ -14,9 +14,6 @@ define('ABSPATH', dirname(__FILE__).'/');
 // defines the application root
 define('APPROOT', substr($_SERVER['SCRIPT_NAME'], 0, strpos($_SERVER['SCRIPT_NAME'], '/app/router.php')));
 
-// creates the configuration array
-$configuration = array();
-
 require(ABSPATH.'config/environment.inc.php');
 require(ABSPATH.'config/db.inc.php');
 
