@@ -73,4 +73,29 @@ function fetchPrefixedData($statement) {
   return $data;
 }
 
+/**
+ * Adds the applications path to the given URL.
+ * @param string $url the URL to add the application's path to.
+ * @return string the (perhaps) modified URL, with the application's path (if needed)
+ */
+function addPath($url) {
+  // if it is not an external link
+  if(!preg_match('/^http(s)*:\/\//', $url)) {
+    // if it starts with a frontslash, remove it
+    if(preg_match('/^\//', $url)) {
+      $url = substr($url,1);
+    }
+
+    // adds the app_path to the url
+    $url = sprintf(
+      "%s%s",
+      app_path(),
+      $url
+    );
+  }
+
+  // returns the url (which might be modified)
+  return $url;
+}
+
 ?>

@@ -8,31 +8,6 @@
  */
 class HtmlHelper {
   /**
-   * Adds the applications path to the given URL.
-   * @param string $url the URL to add the application's path to.
-   * @return string the (perhaps) modified URL, with the application's path (if needed)
-   */
-  private function addPath($url) {
-    // if it is not an external link
-    if(!preg_match('/^http(s)*:\/\//', $url)) {
-      // if it starts with a frontslash, remove it
-      if(preg_match('/^\//', $url)) {
-        $url = substr($url,1);
-      }
-
-      // adds the app_path to the url
-      $url = sprintf(
-        "%s%s",
-        app_path(),
-        $url
-      );
-    }
-
-    // returns the url (which might be modified)
-    return $url;
-  }
-
-  /**
    * Constructs an a-tag, using the given data.
    * @param string $contents the contents to have inside the link
    * @param string $url the url to link to
@@ -54,7 +29,7 @@ class HtmlHelper {
     // completes the a-tag
     $tag = sprintf(
       '<a href="%s"%s>%s</a>',
-      $this->addPath($url),
+      addPath($url),
       $options,
       $contents
     );

@@ -30,7 +30,7 @@ class FormHelper {
       $method,
       // using the addPath method from the lib/functions.php script, to add the
       // applications path to the action url
-      _addPath($action),
+      addPath($action),
       $enctype
     );
   }
