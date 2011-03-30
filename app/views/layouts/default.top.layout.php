@@ -4,8 +4,8 @@
 	<title><?php echo $layout['title']; ?> - Static title</title>
 	<meta name="keywords" content="company message private talk" />
 	<meta name="description" content="Post messages privately in your company" />
-	<!--<script type="text/javascript" src="<?php echo get_javascript('jquery-1.4.1.min.js');?>"></script>-->
-	<link rel="stylesheet" type="text/css" href="<?php echo get_stylesheet('stylesheet.css'); ?>" />
+	<?php echo javascript_include_tag('jquery-1.4.1.min.js'); ?>
+	<?php echo stylesheet_tag('stylesheet.css'); ?>
 </head>
 <body>
 
