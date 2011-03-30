@@ -17,7 +17,6 @@ define('APPROOT', substr($_SERVER['SCRIPT_NAME'], 0, strpos($_SERVER['SCRIPT_NAM
 // creates the configuration array
 $configuration = array();
 
-require(ABSPATH.'lib/functions.php');
 require(ABSPATH.'config/environment.inc.php');
 require(ABSPATH.'config/db.inc.php');
 
