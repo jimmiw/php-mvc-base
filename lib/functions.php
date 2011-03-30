@@ -89,48 +89,48 @@ function image_link($image, $options = null) {
 
 /**
  * A simple function for fetching the data in the given mysql result set, and
- * returning this data prefixed with the table name.field name.
+ * returning this data in prefixed arrays with the [table name][field name]
  *
- * If you have a table created like this:
- * create table users(
- *   id int primary key auto_increment,
- *   name varchar(255)
- * );
- *
- * Then the data returned from a "select * from users" will look like this:
- * array(array('users.id' => 1, 'users.name' => 'jimmiw' ),...)
- *
- * @param $result, the result set from your mysql_query.
+ * @param $statement, the statement set from your query.
  * @return the data from the result, nicely prefixed with the table name
  */
-function mysql_fetch_prefixed_data($result) {
+function fetchPrefixedData($statement) {
+  // sets the fetch mode
+  $statement->setFetchMode(PDO::FETCH_NUM);
+   
   // placeholder for the data
   $data = array();
   // placeholder for the meta data
   $metaData = null;
-  
+
   // runs through the rows in the result set
-  while($row = mysql_fetch_row($result)) {
-    // if the metadata is not initialized, initialize it.
-    if(!isset($metaData)) {
-      $metaData = array();
-      // runs through each tuple, getting the table name and field name
-      for($i = 0; $i < sizeOf($row); $i++) {
-        $meta = mysql_fetch_field($result, $i);
-        $metaData[$i] = $meta->table.".".$meta->name;
-      }
-    }
-    
-    // constructs a placeholder to hold the data from the table
+  while($row = $statement->fetch()) {
     $dataRow = array();
-    // runs through the data, adding the "row name" and the actual data from the row
-    for($i =  0; $i < sizeOf($row); $i++) {
-      $dataRow[$metaData[$i]] = $row[$i];
+     
+    for($i = 0; $i < sizeOf($row); $i++) {
+      $meta = $statement->getColumnMeta($i);
+       
+      // finds the table name
+      $table = $meta['table'];
+      // no table name? properly a concat etc then, add a . as table name
+      if($table == "") {
+        $table = '.';
+      }
+       
+      // adds the current table name to the data array
+      if(!isset($dataRow[$table])) {
+        $dataRow[$table] = array();
+      }
+       
+      // saves the data, prefixed by the table name
+      $dataRow[$table][$meta['name']] = $row[$i];
     }
-    // adds the row data to the data array
+     
+    // adds the data row to the array of data
     $data[] = $dataRow;
   }
-  
+   
+  // returns the data found
   return $data;
 }
 
