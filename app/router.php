@@ -113,23 +113,29 @@ function addFilter($filter, $when = 'before') {
 }
 
 /**
- * Loads the libraries in the lib folder.
+ * Loads the libraries (scripts) in the given folder.
+ * @param string $folder the folder to load the scripts in (default is ../lib/)
  */
-function loadVendorLibraries() {
-  // resets the filters
-  $_SESSION['before_filter'] = array();
-  $_SESSION['after_filter'] = array();
+function loadLibraries($folder = '../lib/') {
+  // if the folder does not end with a /, add it
+  if(!preg_match('/\/$/', $folder)) {
+    $folder .= '/';
+  }
   
-  $vendorFolder = "../vendor/";
-  
-  // opens the lib folder
-  if($dir = opendir($vendorFolder)) {
+  // opens the folder and starts reading it.
+  if($dir = opendir($folder)) {
     // runs through the files, loading them one by one
     while(false !== ($file = readdir($dir))) {
       if($file != "." && $file != "..") {
-        if(is_file($vendorFolder.$file) && preg_match('/.php$/', $file)) {
+        // tests if it's a script file.
+        if(is_file($folder.$file) && preg_match('/.php$/', $file)) {
           // includes the vendor file
-          include_once($vendorFolder.$file);
+          include_once($folder.$file);
+        }
+        // if the current file is a folder, enter that folder and load
+        // the scripts there.
+        else if(is_dir($folder.$file)) {
+          loadLibraries($folder.$file);
         }
       }
     }
@@ -137,6 +143,17 @@ function loadVendorLibraries() {
     // closes the folder handler
     closedir($dir);
   }
+}
+
+/**
+ * Loads the libraries in the lib folder.
+ */
+function loadVendorLibraries() {
+  // resets the filters
+  $_SESSION['before_filter'] = array();
+  $_SESSION['after_filter'] = array();
+  
+  loadLibraries('../vendor/');
 }
 
 /**
@@ -155,6 +172,8 @@ $params = array();
 // tries to find a controller to use
 $controller = findController(currentUrl(), &$params);
 
+// loads the systems libraries, used for various things such as helpers etc.
+loadLibraries();
 // loads the libraries in the vendor folder
 loadVendorLibraries();
 
