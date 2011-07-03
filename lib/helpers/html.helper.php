@@ -61,7 +61,7 @@ class HtmlHelper {
       $htmlImage .= ' style="'.$options['style'].'"';
     }
 
-    $htmlImage .= '" />';
+    $htmlImage .= ' />';
     return $htmlImage;
   }
   
