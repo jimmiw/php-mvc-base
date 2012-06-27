@@ -1,6 +1,9 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
-  RewriteBase /
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteRule ^ /app/router.php [L,QSA]
+  
+  # Parse requests that doesn't map to real files
+  RewriteCond %{REQUEST_FILENAME} -s [OR]
+  RewriteCond %{REQUEST_FILENAME} -l
+  RewriteRule ^.*$ - [NC,L]
+  RewriteRule ^.*$ index.php [NC,L]
 </IfModule>
