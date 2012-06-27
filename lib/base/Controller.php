@@ -17,7 +17,7 @@ class Controller
 	 */
 	public function init()
 	{
-		$this->view = new View($action);
+		$this->view = new View();
 	}
 	
 	/**

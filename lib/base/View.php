@@ -25,7 +25,7 @@ class View
 		ob_start();
 		
 		// includes the view script
-		include(ABSPATH . 'app/views/scripts/' . $viewScript);
+		include(ROOT_PATH . '/app/views/scripts/' . $viewScript);
 		
 		// returns the content of the output buffer
 		$this->_content = ob_get_clean();
@@ -49,7 +49,7 @@ class View
 		
 		// includes the current view, which uses the "$this->content()" to output the 
 		// view script that was just rendered
-		include(ABSPATH . 'app/views/layouts/' . $this->_getLayout() . '.phtml');
+		include(ROOT_PATH . '/app/views/layouts/' . $this->_getLayout() . '.phtml');
 	}
 	
 	protected function _getLayout()
@@ -85,5 +85,15 @@ class View
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * The base url is used if the application is located in a subfolder. Use
+	 * this function when linking to things.
+	 * @return string the baseUrl for the application.
+	 */
+	public function baseUrl()
+	{
+		return WEB_ROOT;
 	}
 }
