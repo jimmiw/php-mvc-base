@@ -14,6 +14,10 @@ define('CMS_PATH', ROOT_PATH . '/lib/base/');
 // starts the session
 session_start();
 
+/**
+ * Standard autoloader
+ * @param string $className
+ */
 function __autoload($className) {
 	// controller autoloading
 	if (strlen($className) > 10 && substr($className, -10) == 'Controller') {
@@ -30,6 +34,11 @@ function __autoload($className) {
 		}
 	}
 }
+
+// loads the environment settings
+require(ROOT_PATH . '/config/environment.inc.php');
+// loads the database config
+require(ROOT_PATH . '/config/db.inc.php');
 
 // includes the system routes
 include(ROOT_PATH . '/config/routes.php');
