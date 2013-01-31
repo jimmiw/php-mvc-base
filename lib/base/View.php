@@ -12,9 +12,21 @@ class View
 	protected $_content = "";
 	// the standard layout
 	protected $_layout = 'layout';
+	
+	protected $_viewEnabled = true;
+	protected $_layoutEnabled = true;
+	
 	// initializes the data array
 	protected $_data = array();
+	// intializes the additional javascripts to add to the header.
+	protected $_javascripts = '';
 	
+	public $settings = null;
+	
+	public function __construct()
+	{
+	  $this->settings = new stdClass();
+	}
 
 	/**
 	 * Renders the view script, and stores the output
@@ -44,12 +56,36 @@ class View
 	 */
 	public function render($viewScript)
 	{
-		// renders the view script
-		$this->_renderViewScript($viewScript);
+	  if ($viewScript && $this->_viewEnabled) {
+  		// renders the view script
+  		$this->_renderViewScript($viewScript);
+	  }
 		
-		// includes the current view, which uses the "$this->content()" to output the 
-		// view script that was just rendered
-		include(ROOT_PATH . '/app/views/layouts/' . $this->_getLayout() . '.phtml');
+	  if ($this->_isLayoutDisabled()) {
+	    echo $this->_content;
+	  }
+	  else {
+  		// includes the current view, which uses the "$this->content()" to output the 
+  		// view script that was just rendered
+  		include(ROOT_PATH . '/app/views/layouts/' . $this->_getLayout() . '.phtml');
+	  }
+	}
+	
+	/**
+	 * Renders the given data as json
+	 * @param mixed $data
+	 */
+	public function renderJson($data)
+	{
+	  $this->disableView();
+	  $this->disableLayout();
+	  
+	  // sets the json headers
+	  header('Cache-Control: no-cache, must-revalidate');
+	  header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+	  header('Content-type: application/json');
+	  
+	  echo json_encode($data);
 	}
 	
 	protected function _getLayout()
@@ -60,6 +96,20 @@ class View
 	public function setLayout($layout)
 	{
 		$this->_layout = $layout;
+		
+		if ($layout) {
+		  $this->_enableLayout();
+		}
+	}
+	
+	public function disableLayout()
+	{
+	  $this->_layoutEnabled = false;
+	}
+	
+	public function disableView()
+	{
+	  $this->_viewEnabled = false;
 	}
 	
 	/**
@@ -95,5 +145,38 @@ class View
 	public function baseUrl()
 	{
 		return WEB_ROOT;
+	}
+	
+	/**
+	 * Adds a new javascript to the header.
+	 * @param string $script the path to the script to add
+	 */
+	public function appendScript($script)
+	{
+		$this->_javascripts .= '<script type="text/javascript" src="'.$script.'"></script>' ."\n";
+	}
+	
+	/**
+	 * Prints the included javascripts
+	 */
+	public function printScripts()
+	{
+		echo $this->_javascripts;
+	}
+	
+	/**
+	 * Sets the layout to be used
+	 */
+	protected function _enableLayout()
+	{
+	  $this->_layoutEnabled = true;
+	}
+	
+	/**
+	 * Tests if the layout is disabled
+	 */
+	protected function _isLayoutDisabled()
+	{
+	  return !$this->_layoutEnabled;
 	}
 }
