@@ -40,4 +40,18 @@ class Request
 			
 		return $default;
 	}
+	
+	/**
+	 * Returns a list of parameters given in the current request
+	 * @return array the params given
+	 */
+	public function getAllParams()
+	{
+		if ($this->isPost()) {
+			return $_POST;
+		}
+		else if ($this->_isGet()) {
+			return $_GET;
+		}
+	}
 }
