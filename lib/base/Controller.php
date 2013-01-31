@@ -7,12 +7,14 @@
  */
 class Controller
 {
-	// defines the standard layout to use
-	protected $_layout = 'layout';
 	// defines the view
 	public $view = null;
 	// defines the request
 	protected $_request = null;
+	// the current action
+	protected $_action = null;
+	
+	protected $_namedParameters = array();
 	
 	/**
 	 * initializes various things in the controller
@@ -20,15 +22,9 @@ class Controller
 	public function init()
 	{
 		$this->view = new View();
-	}
-	
-	/**
-	 * Sets a new layout to use
-	 * @param string $layout the new layout to use
-	 */
-	public function setLayout($layout)
-	{
-		$this->_layout = $layout;
+		
+		$this->view->settings->action = $this->_action;
+		$this->view->settings->controller = strtolower(str_replace('Controller', '', get_class($this)));
 	}
 	
 	/**
@@ -55,6 +51,9 @@ class Controller
 	 */
 	public function execute($action = 'index')
 	{
+		// stores the current action
+		$this->_action = $action;
+		
 		// initializes the controller
 		$this->init();
 		
@@ -121,6 +120,26 @@ class Controller
 	 */
 	protected function _getParam($key, $default = null)
 	{
+		// tests against the named parameters first
+		if (isset($this->_namedParameters[$key])) {
+			return $this->_namedParameters[$key];
+		}
+		
+		// tests against the GET/POST parameters
 		return $this->getRequest()->getParam($key, $default);
+	}
+	
+	/**
+	 * Fetches all the current parameters
+	 * @return array a list of all the parameters
+	 */
+	protected function _getAllParams()
+	{
+		return array_merge($this->getRequest()->getAllParams(), $this->_namedParameters);
+	}
+	
+	public function addNamedParameter($key, $value)
+	{
+		$this->_namedParameters[$key] = $value;
 	}
 }
